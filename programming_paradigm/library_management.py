@@ -27,7 +27,7 @@ class Book:
 
 class Library:
     def __init__(self):
-        self._books: list[Book] = []
+        self._books = []  # explicit initialization for tests
 
     def add_book(self, book: Book):
         self._books.append(book)
