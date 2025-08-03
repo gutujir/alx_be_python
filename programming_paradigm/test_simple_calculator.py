@@ -45,22 +45,28 @@ class TestSimpleCalculator(unittest.TestCase):
             with self.subTest(a=a, b=b):
                 self.assertEqual(self.calc.multiply(a, b), expected)
 
-    def test_division_normal(self):
-        cases = [
+    def test_division(self):
+        # normal division cases
+        normal_cases = [
             (10, 2, 5.0),
             (3, 2, 1.5),
             (-6, 3, -2.0),
             (7.5, 2.5, 3.0),
             (0, 5, 0.0),
         ]
-        for a, b, expected in cases:
+        for a, b, expected in normal_cases:
             with self.subTest(a=a, b=b):
                 self.assertEqual(self.calc.divide(a, b), expected)
 
-    def test_division_by_zero(self):
-        self.assertIsNone(self.calc.divide(10, 0))
-        self.assertIsNone(self.calc.divide(0, 0))
-        self.assertIsNone(self.calc.divide(-5, 0))
+        # division by zero cases
+        zero_cases = [
+            (10, 0),
+            (0, 0),
+            (-5, 0),
+        ]
+        for a, b in zero_cases:
+            with self.subTest(a=a, b=b):
+                self.assertIsNone(self.calc.divide(a, b))
 
     def test_idempotent_and_commutativity_where_applicable(self):
         # addition and multiplication are commutative
@@ -72,16 +78,14 @@ class TestSimpleCalculator(unittest.TestCase):
             self.assertNotEqual(self.calc.divide(5, 4), self.calc.divide(4, 5))
 
     def test_non_numeric_input_raises_type_error_or_fails_gracefully(self):
-        # The current implementation will raise TypeError if unsupported types are passed
         with self.assertRaises(TypeError):
             _ = self.calc.add("a", 1)
         with self.assertRaises(TypeError):
             _ = self.calc.subtract("a", "b")
         with self.assertRaises(TypeError):
             _ = self.calc.multiply("x", 3)
-        # divide with non-numeric generally raises TypeError unless handled upstream
         with self.assertRaises(TypeError):
-            _ = self.calc.divide("10", "2")  # string division not supported
+            _ = self.calc.divide("10", "2")
 
     def test_large_and_small_values(self):
         self.assertEqual(self.calc.add(1e308, 1e308),
